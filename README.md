@@ -1,83 +1,58 @@
-# 📌 Convertitore Markdown to PDF
+# Convertitore Markdown to PDF
 
-Questo script permette di convertire tutti i file **Markdown (.md)** presenti in una cartella e nelle relative sottocartelle in un **unico file PDF**. Supporta immagini e consente di applicare uno stile personalizzato tramite un file CSS.
+## Descrizione
+Questo progetto permette di convertire file Markdown (`.md`) in un unico file PDF mantenendo la struttura e i riferimenti alle immagini.
+Il codice si assicura di aggiornare automaticamente i percorsi delle immagini, adattandoli in base al sistema operativo e alla struttura del progetto.
 
----
+## Struttura del progetto
+La cartella principale contiene diverse sottocartelle con i file `.md`, oltre a una cartella `img/` per le immagini:
 
-## 📥 Installazione
+```
+sql course advanced/
+├── 01 Introduzione/
+├── 02 sql basics/
+├── 03 Manipolazione di dati/
+├── 04 Definizione di tabelle/
+├── 05 Query multi tabella/
+├── 06 Funzioni aggregate/
+├── 07 funzioni scalari/
+├── 08 Sottoquery e CTE/
+├── 09 Window function/
+└── img/
+```
 
-### 1️⃣ Requisiti
+Ogni sottocartella contiene file Markdown che devono essere convertiti in PDF, preservando la struttura e i riferimenti alle immagini.
+
+## Requisiti
 Assicurati di avere installati:
-- **Python 3.x** ([Scarica qui](https://www.python.org/downloads/))
-- **Pandoc** ([Scarica qui](https://pandoc.org/installing.html))
-- **TeX Live / MiKTeX** (necessario per la generazione del PDF con XeLaTeX)
+- Python 3.x
+- [Pandoc](https://pandoc.org/installing.html)
+- Il pacchetto Python `pypandoc`
 
-### 2️⃣ Installazione delle dipendenze
-Esegui il seguente comando per installare la libreria necessaria:
-```sh
+Per installare `pypandoc`, usa:
+```bash
 pip install pypandoc
 ```
 
----
+## Esecuzione
+Per eseguire lo script di conversione, apri un terminale nella cartella del progetto e lancia:
 
-## 🚀 Utilizzo
-Esegui il seguente comando da terminale:
-```sh
+```bash
 python main.py
 ```
 
-### 🔹 Passaggi
-1. Ti verrà chiesto di inserire il **percorso della cartella** contenente i file `.md`.
-2. Dovrai specificare il **nome del file PDF di output**.
-3. Il programma elaborerà tutti i file Markdown e genererà un unico PDF con le immagini incluse e una formattazione CSS personalizzata.
+Lo script chiederà di inserire:
+1. Il percorso della cartella principale (`sql course advanced/` nella struttura sopra).
+2. Il nome del file PDF di output.
 
----
+Il codice modificherà i percorsi delle immagini in modo che siano riconosciuti correttamente e genererà il file PDF finale.
 
-## 🎨 Personalizzazione del CSS
-Il file `style.css` consente di personalizzare la formattazione del PDF.
-- Per modificare lo stile di **tabelle**, **codice**, **titoli**, ecc., modifica il file `style.css` presente nella stessa cartella di `main.py`.
+## Funzionamento dello script
+1. **Individuazione dei file Markdown**: Lo script cerca tutti i file `.md` nelle sottocartelle della cartella indicata.
+2. **Aggiornamento dei percorsi delle immagini**: Qualsiasi riferimento a `./img/` viene aggiornato per riflettere la posizione corretta.
+3. **Conversione con Pandoc**: I file Markdown vengono convertiti in PDF, applicando anche un eventuale file CSS personalizzato.
+4. **Pulizia**: Dopo la conversione, i file temporanei generati dallo script vengono rimossi.
 
-Esempio di `style.css` per migliorare le tabelle e il codice:
-```css
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-td, th {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
-}
-
-code {
-    background-color: #f4f4f4;
-    padding: 2px 4px;
-    font-family: monospace;
-    border-radius: 4px;
-}
-```
-
----
-
-## 🛠 Funzionalità
-✅ **Supporta Windows, Linux e macOS** (gestione automatica dei percorsi).  
-✅ **Ricerca automatica di tutti i file `.md` in sottocartelle**.  
-✅ **Supporta immagini nei file `.md`**.  
-✅ **Applica uno stile CSS personalizzato**.  
-✅ **Sovrascrive automaticamente il file PDF se già presente**.  
-
----
-
-## ⚠️ Risoluzione Problemi
-- **Errore: `pandoc: command not found`** → Assicurati di aver installato Pandoc e di averlo aggiunto al `PATH`.
-- **Errore di conversione a PDF** → Installa MiKTeX (Windows) o TeX Live (Linux/macOS) per supportare `xelatex`.
-- **Le immagini non vengono incluse** → Assicurati che le immagini siano referenziate con percorsi relativi nei file Markdown.
-
----
-
-## 📜 Licenza
-Questo progetto è distribuito sotto licenza MIT. Sentiti libero di modificarlo e migliorarlo!
-
-🚀 **Buona conversione!**
+## Contatti
+Per ulteriori dettagli, visita il mio sito: [federicocalo.dev](https://federicocalo.dev)
 
