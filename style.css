@@ -39,7 +39,7 @@ tr:nth-child(even) {
 /* Codice */
 pre {
     background-color: #282c34;
-    color: #abb2bf;
+    color: #ffffff;
     padding: 15px;
     border-radius: 5px;
     overflow-x: auto;
@@ -50,7 +50,12 @@ pre {
 code {
     font-family: 'Fira Code', monospace;
     font-size: 14px;
-    color: #e06c75;
+    font-weight: bold;
+    color: #1d2e6e;
+}
+
+pre code {
+    color: #ffffff; /* Più chiaro su sfondo scuro */
 }
 
 h1, h2, h3 {
