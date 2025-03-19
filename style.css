@@ -1,0 +1,87 @@
+/* Imposta il font predefinito */
+body {
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fff;
+    margin: 20px;
+    text-align: justify;
+}
+
+/* Titoli */
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Georgia", serif;
+    color: #2C3E50;
+    margin-top: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+/* Tabelle */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+/* Riga alternata per migliorare la leggibilità */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Codice */
+code {
+    font-family: "Courier New", monospace;
+    background-color: #2d2d2d;
+    color: #ffffff;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+/* Blocchi di codice */
+pre {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 13px;
+}
+
+/* Immagini */
+img {
+    max-width: 100%;
+    display: block;
+    margin: 10px auto;
+    border-radius: 5px;
+}
+
+/* Citazioni */
+blockquote {
+    border-left: 5px solid #3498db;
+    padding: 10px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    font-style: italic;
+}
+
+/* Link */
+a {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
