@@ -1,7 +1,7 @@
 import os
+import subprocess
 import pypandoc
 from pathlib import Path
-import platform
 
 
 def preprocess_md_files(md_files, folder_path):
@@ -28,7 +28,7 @@ def preprocess_md_files(md_files, folder_path):
     return updated_files
 
 
-def convert_md_to_pdf(folder_path, output_pdf):
+def convert_md_to_pdf(folder_path, output_pdf, method):
     md_files = []
 
     # Percorre tutte le sottocartelle per trovare i file .md
@@ -40,57 +40,82 @@ def convert_md_to_pdf(folder_path, output_pdf):
 
     if md_files:
         try:
-            # Percorso della cartella dello script (dove si trova main.py e style.css)
             script_dir = Path(__file__).parent.resolve()
-            css_path = script_dir / "style.css"
 
-            # Normalizza il percorso in base al sistema operativo
-            resource_path = Path(folder_path).resolve()
+            if method == "css":
+                css_path = script_dir / "style.css"
+                if not css_path.exists():
+                    print(f"⚠️ ATTENZIONE: Il file CSS non è stato trovato! ({css_path})")
+                    return
+                else:
+                    print(f"✅ File CSS trovato: {css_path}")
 
-            # Preprocessa i file Markdown per aggiornare i percorsi delle immagini
-            updated_md_files = preprocess_md_files(md_files, folder_path)
+                # Normalizza il percorso in base al sistema operativo
+                resource_path = Path(folder_path).resolve()
+                updated_md_files = preprocess_md_files(md_files, folder_path)
+                extra_args = [
+                    "--pdf-engine=xelatex",
+                    f"--resource-path={resource_path}:{resource_path}/img",
+                    f"--css={css_path}",
+                    "--highlight-style=tango"
+                ]
 
-            # Opzioni extra per Pandoc
-            extra_args = [
-                "--pdf-engine=xelatex",  # Usa XeLaTeX per una migliore formattazione
-                f"--resource-path={resource_path}:{resource_path}/img",  # Permette di caricare immagini
-                f"--css={css_path}"  # Applica il CSS personalizzato
-            ]
+            elif method == "latex":
+                template_path = script_dir / "eisvogel.tex"
+                if not template_path.exists():
+                    print(f"⚠️ ATTENZIONE: Il file template LaTeX non è stato trovato! ({template_path})")
+                    return
+                else:
+                    print(f"✅ Template LaTeX trovato: {template_path}")
 
-            print(f"🔄 Percorsi risorse: {resource_path}, {resource_path}/img")
+                updated_md_files = preprocess_md_files(md_files, folder_path)
+                extra_args = [
+                    "--pdf-engine=xelatex",
+                    f"--template={template_path}",
+                    "--highlight-style=tango",
+                    "-V fontsize=12pt",
+                    "-V mainfont='DejaVu Sans'",
+                    "-V monofont='Fira Code'",
+                    "-V colorlinks=true",
+                    "-V linkcolor=blue",
+                    "-V urlcolor=blue"
+                ]
+            else:
+                print("❌ Metodo di conversione non valido. Scegli 'css' o 'latex'.")
+                return
+
+            print(f"🔄 Conversione in corso con il metodo {method}...")
 
             # Se il file PDF esiste già, lo elimina prima di crearne uno nuovo
             if os.path.exists(output_pdf):
                 os.remove(output_pdf)
                 print(f"🔄 Il file esistente {output_pdf} è stato eliminato.")
 
-            # Conversione a PDF
-            pypandoc.convert_file(updated_md_files, "pdf", outputfile=output_pdf, extra_args=extra_args,
-                                  format="markdown")
-            print(f"✅ Conversione completata: {output_pdf}")
+            # Conversione con Pandoc e il metodo scelto
+            command = ["pandoc"] + updated_md_files + ["-o", output_pdf] + extra_args
+            subprocess.run(command, check=True)
+
+            print(f"✅ PDF generato con successo: {output_pdf}")
 
             # Rimuove i file temporanei solo se la conversione è avvenuta con successo
             for temp_file in updated_md_files:
                 if os.path.exists(temp_file):
                     os.remove(temp_file)
                     print(f"🗑️ File temporaneo eliminato: {temp_file}")
-        except Exception as e:
+        except subprocess.CalledProcessError as e:
             print(f"❌ Errore durante la conversione: {e}")
     else:
         print("⚠️ Nessun file .md trovato per la conversione.")
 
 
 if __name__ == '__main__':
-    # L'utente inserisce il percorso dei file Markdown
     folder_path = input("📂 Inserisci il percorso della cartella contenente i file .md: ").strip()
-
-    # Normalizza il percorso in base al sistema operativo
     folder_path = str(Path(folder_path).resolve())
 
-    # Controlla se la cartella esiste
     if not os.path.isdir(folder_path):
         print("❌ Errore: la cartella specificata non esiste.")
     else:
         output_filename = input("📝 Inserisci il nome del file PDF (senza estensione): ").strip()
         output_pdf = os.path.join(folder_path, f"{output_filename}.pdf")
-        convert_md_to_pdf(folder_path, output_pdf)
+        method = input("🔧 Scegli il metodo di conversione ('css' o 'latex'): ").strip().lower()
+        convert_md_to_pdf(folder_path, output_pdf, method)
