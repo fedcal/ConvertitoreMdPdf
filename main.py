@@ -28,6 +28,29 @@ def preprocess_md_files(md_files, folder_path):
     return updated_files
 
 
+def apply_css_styles(md_files, css_path):
+    """
+    Aggiunge direttamente gli stili CSS nel contenuto Markdown per forzare la formattazione nel PDF.
+    """
+    updated_files = []
+    with open(css_path, "r", encoding="utf-8") as css_file:
+        css_content = css_file.read()
+
+    for md_file in md_files:
+        with open(md_file, "r", encoding="utf-8") as file:
+            content = file.read()
+
+        # Inserisce gli stili CSS direttamente nel Markdown
+        styled_content = f"<style>{css_content}</style>\n\n" + content
+        temp_file = md_file + ".styled.tmp"
+        with open(temp_file, "w", encoding="utf-8") as file:
+            file.write(styled_content)
+
+        updated_files.append(temp_file)
+
+    return updated_files
+
+
 def convert_md_to_pdf(folder_path, output_pdf, method):
     md_files = []
 
@@ -53,10 +76,10 @@ def convert_md_to_pdf(folder_path, output_pdf, method):
                 # Normalizza il percorso in base al sistema operativo
                 resource_path = Path(folder_path).resolve()
                 updated_md_files = preprocess_md_files(md_files, folder_path)
+                styled_md_files = apply_css_styles(updated_md_files, css_path)
                 extra_args = [
                     "--pdf-engine=xelatex",
                     f"--resource-path={resource_path}:{resource_path}/img",
-                    f"--css={css_path}",
                     "--highlight-style=tango"
                 ]
 
@@ -92,7 +115,8 @@ def convert_md_to_pdf(folder_path, output_pdf, method):
                 print(f"🔄 Il file esistente {output_pdf} è stato eliminato.")
 
             # Conversione con Pandoc e il metodo scelto
-            command = ["pandoc"] + updated_md_files + ["-o", output_pdf] + extra_args
+            command = ["pandoc"] + (styled_md_files if method == "css" else updated_md_files) + ["-o",
+                                                                                                 output_pdf] + extra_args
             subprocess.run(command, check=True)
 
             print(f"✅ PDF generato con successo: {output_pdf}")
