@@ -1,58 +1,41 @@
-# Convertitore Markdown to PDF
+# Convert Md To Pdf
 
 ## Descrizione
-Questo progetto permette di convertire file Markdown (`.md`) in un unico file PDF mantenendo la struttura e i riferimenti alle immagini.
-Il codice si assicura di aggiornare automaticamente i percorsi delle immagini, adattandoli in base al sistema operativo e alla struttura del progetto.
-
-## Struttura del progetto
-La cartella principale contiene diverse sottocartelle con i file `.md`, oltre a una cartella `img/` per le immagini:
-
-```
-sql course advanced/
-├── 01 Introduzione/
-├── 02 sql basics/
-├── 03 Manipolazione di dati/
-├── 04 Definizione di tabelle/
-├── 05 Query multi tabella/
-├── 06 Funzioni aggregate/
-├── 07 funzioni scalari/
-├── 08 Sottoquery e CTE/
-├── 09 Window function/
-└── img/
-```
-
-Ogni sottocartella contiene file Markdown che devono essere convertiti in PDF, preservando la struttura e i riferimenti alle immagini.
+Questo progetto permette di convertire file Markdown (`.md`) in PDF utilizzando diversi metodi, tra cui CSS, LaTeX, Pandoc e WeasyPrint. Supporta la generazione automatica di un indice e la personalizzazione con fogli di stile CSS o template LaTeX.
 
 ## Requisiti
-Assicurati di avere installati:
-- Python 3.x
-- [Pandoc](https://pandoc.org/installing.html)
-- Il pacchetto Python `pypandoc`
+Assicurati di avere installati i seguenti strumenti:
+- Python 3
+- Pandoc
+- WeasyPrint
+- XeLaTeX (se si utilizza il metodo LaTeX)
 
-Per installare `pypandoc`, usa:
-```bash
-pip install pypandoc
+Installa le dipendenze Python necessarie con:
+```sh
+pip install pypandoc weasyprint
 ```
 
-## Esecuzione
-Per eseguire lo script di conversione, apri un terminale nella cartella del progetto e lancia:
-
-```bash
-python main.py
+## Utilizzo
+Esegui lo script Python con:
+```sh
+python convert_md_to_pdf.py
 ```
+Il programma chiederà di inserire:
+1. Il percorso della cartella contenente i file Markdown
+2. Il nome del file PDF di output
+3. Il metodo di conversione (`css`, `latex`, `pandoc`, `weasyprint`)
+4. Il nome e l'URL dell'autore
 
-Lo script chiederà di inserire:
-1. Il percorso della cartella principale (`sql course advanced/` nella struttura sopra).
-2. Il nome del file PDF di output.
+## Metodi di Conversione
+- **CSS**: Utilizza Pandoc per convertire Markdown in HTML e WeasyPrint per generare il PDF.
+- **LaTeX**: Utilizza un template LaTeX con Pandoc per una resa tipografica avanzata.
+- **Pandoc**: Conversione diretta da Markdown a PDF usando il motore XeLaTeX.
+- **WeasyPrint**: Converte Markdown in HTML e poi in PDF usando WeasyPrint.
 
-Il codice modificherà i percorsi delle immagini in modo che siano riconosciuti correttamente e genererà il file PDF finale.
+## Struttura del Progetto
+- `convert_md_to_pdf.py` - Script principale per la conversione.
+- `style.css` - Foglio di stile opzionale per la conversione CSS/WeasyPrint.
+- `eisvogel.tex` - Template LaTeX per la conversione con Pandoc e LaTeX.
 
-## Funzionamento dello script
-1. **Individuazione dei file Markdown**: Lo script cerca tutti i file `.md` nelle sottocartelle della cartella indicata.
-2. **Aggiornamento dei percorsi delle immagini**: Qualsiasi riferimento a `./img/` viene aggiornato per riflettere la posizione corretta.
-3. **Conversione con Pandoc**: I file Markdown vengono convertiti in PDF, applicando anche un eventuale file CSS personalizzato.
-4. **Pulizia**: Dopo la conversione, i file temporanei generati dallo script vengono rimossi.
-
-## Contatti
-Per ulteriori dettagli, visita il mio sito: [federicocalo.dev](https://federicocalo.dev)
-
+## Licenza
+Questo progetto è distribuito sotto la licenza MIT.
