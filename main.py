@@ -5,14 +5,15 @@ from pathlib import Path
 from weasyprint import HTML
 
 
-def preprocess_md_files(md_files, folder_path):
-    """Modifica i percorsi relativi delle immagini nei file Markdown."""
+def preprocess_md_files(md_files, folder_path, header_text):
+    """Modifica i percorsi relativi delle immagini nei file Markdown e aggiunge l'intestazione."""
     updated_files = []
     for md_file in md_files:
         md_dir = os.path.dirname(md_file)
         with open(md_file, "r", encoding="utf-8") as file:
             content = file.read()
-        updated_content = content.replace("./img/", f"{folder_path}/img/")
+        updated_content = f"{header_text}\n\n" + content
+        updated_content = updated_content.replace("./img/", f"{folder_path}/img/")
         updated_content = updated_content.replace("./img/", f"{md_dir}/img/")
         temp_file = md_file + ".tmp"
         with open(temp_file, "w", encoding="utf-8") as file:
@@ -39,10 +40,10 @@ def cleanup_files(files):
     for file in files:
         if os.path.exists(file):
             os.remove(file)
-            print(f"🗑️ File eliminato: {file}")
+            print(f"\U0001F5D1️ File eliminato: {file}")
 
 
-def convert_md_to_pdf(folder_path, output_pdf, method):
+def convert_md_to_pdf(folder_path, output_pdf, method, author_text):
     md_files = [os.path.join(root, f) for root, _, files in os.walk(folder_path) for f in sorted(files) if
                 f.endswith(".md")]
     if not md_files:
@@ -53,49 +54,37 @@ def convert_md_to_pdf(folder_path, output_pdf, method):
         script_dir = Path(__file__).parent.resolve()
         temp_files = []
 
-        if method == "css":
+        if method in ["css", "weasyprint"]:
             css_path = script_dir / "style.css"
             if not css_path.exists():
                 print(f"⚠️ File CSS non trovato: {css_path}")
                 return
             output_html = output_pdf.replace(".pdf", ".html")
-            updated_md_files = preprocess_md_files(md_files, folder_path)
+            updated_md_files = preprocess_md_files(md_files, folder_path, author_text)
             temp_files.extend(updated_md_files)
             convert_md_to_html(updated_md_files, output_html)
             convert_html_to_pdf(output_html, css_path, output_pdf)
             temp_files.append(output_html)
-            print(f"✅ PDF generato con successo: {output_pdf}")
 
         elif method == "latex":
             template_path = script_dir / "eisvogel.tex"
             if not template_path.exists():
                 print(f"⚠️ Template LaTeX non trovato: {template_path}")
                 return
-            updated_md_files = preprocess_md_files(md_files, folder_path)
+            updated_md_files = preprocess_md_files(md_files, folder_path, author_text)
             temp_files.extend(updated_md_files)
             command = ["pandoc"] + updated_md_files + ["-o", output_pdf, "--pdf-engine=xelatex",
                                                        f"--template={template_path}", "--highlight-style=tango"]
             subprocess.run(command, check=True)
-            print(f"✅ PDF generato con successo: {output_pdf}")
 
         elif method == "pandoc":
-            updated_md_files = preprocess_md_files(md_files, folder_path)
+            updated_md_files = preprocess_md_files(md_files, folder_path, author_text)
             temp_files.extend(updated_md_files)
             command = ["pandoc"] + updated_md_files + ["-o", output_pdf, "--pdf-engine=xelatex",
                                                        "--highlight-style=tango"]
             subprocess.run(command, check=True)
-            print(f"✅ PDF generato con successo: {output_pdf}")
 
-        elif method == "weasyprint":
-            css_path = script_dir / "style.css"
-            output_html = output_pdf.replace(".pdf", ".html")
-            updated_md_files = preprocess_md_files(md_files, folder_path)
-            temp_files.extend(updated_md_files)
-            convert_md_to_html(updated_md_files, output_html)
-            convert_html_to_pdf(output_html, css_path, output_pdf)
-            temp_files.append(output_html)
-            print(f"✅ PDF generato con successo: {output_pdf}")
-
+        print(f"✅ PDF generato con successo: {output_pdf}")
         cleanup_files(temp_files)
 
     except subprocess.CalledProcessError as e:
@@ -111,4 +100,7 @@ if __name__ == '__main__':
         output_filename = input("📝 Inserisci il nome del file PDF (senza estensione): ").strip()
         output_pdf = os.path.join(folder_path, f"{output_filename}.pdf")
         method = input("🔧 Scegli il metodo di conversione ('css', 'latex', 'pandoc', 'weasyprint'): ").strip().lower()
-        convert_md_to_pdf(folder_path, output_pdf, method)
+        author_name = input("✍️ Inserisci il tuo nome: ").strip()
+        author_link = input("🔗 Inserisci il tuo sito web (es. https://www.miosito.com): ").strip()
+        author_text = f"[Appunti di: {author_name}]({author_link})" if author_link else f"Appunti di: {author_name}"
+        convert_md_to_pdf(folder_path, output_pdf, method, author_text)
